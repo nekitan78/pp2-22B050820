@@ -4,6 +4,6 @@ def func(*arg):
 func("hey", "bye", "lol")
 
 def func1(x = "Dima"):
-    print(x, "is fagot")
+    print(x, "is cool")
 
 func1("Dima anyway")
