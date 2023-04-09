@@ -1,8 +1,8 @@
 import os
 path = "\pp2 spring"
-print("Only directories:")
+print("only directories:")
 print([ name for name in os.listdir(path) if os.path.isdir(os.path.join(path, name)) ])
-print("\nOnly files:")
+print("\nonly files:")
 print([ name for name in os.listdir(path) if not os.path.isdir(os.path.join(path, name)) ])
-print("\nAll directories and files :")
+print("\nall directories and files :")
 print([ name for name in os.listdir(path)])
