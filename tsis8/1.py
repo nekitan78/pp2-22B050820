@@ -56,9 +56,9 @@ def main():
         
         pygame.display.update()
         clock.tick(60)
-
-
-if __name__ == "__1.py__":
-    pygame.init()
-    main()
     pygame.quit()
+
+
+
+main()
+    
