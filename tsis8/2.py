@@ -12,7 +12,7 @@ SONG_END = pygame.USEREVENT + 1
 cntsng = 0
 
 pygame.mixer.music.set_endevent(SONG_END)
-pygame.mixer.music.load('Die For You (256  kbps).mp3')
+pygame.mixer.music.load(_songs[0])
 pygame.mixer.music.play()
 
 

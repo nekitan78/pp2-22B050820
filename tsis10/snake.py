@@ -1,16 +1,60 @@
+import psycopg2
 import pygame
 import random
 from pygame.locals import *
 import sys
+from tkinter import *
+
+
+hostname = 'localhost'
+database = 'snake'
+username = 'postgres'
+pwd = '43435465niK&'
+port_id = '5432'
+
+try:
+
+    conn = psycopg2.connect(
+        host = hostname,
+        dbname = database,
+        user = username,
+        password = pwd,
+        port = port_id
+    )
+
+    cur = conn.cursor()
+    #cur.execute("SELECT * FROM snakeInfo")
+
+    #cur.execute("DROP TABLE snakeInfo")
+
+    #cur.execute("DELETE FROM snakeInfo")
+
+    #cur.execute("CREATE TABLE snakeInfo (id SERIAL PRIMARY KEY, name TEXT NOT NULL, score TEXT)")
+    #conn.commit()
+
+except Exception as error:
+    print(error)
+
+
+username = None
+name = None
+
+def enterName():
+    global username
+    username = entry.get()
+    name = entry.get()
+    if name == '':
+        enterName()
+    window.destroy()
 
 pygame.init()
-
 
 #set size of the screen
 height = 625
 width = 625
 
 sizeBlock = 30
+
 
 font = pygame.font.Font(pygame.font.get_default_font(), sizeBlock*2)
 
@@ -35,6 +79,9 @@ def drawField():
 
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake")
+
+
+
 
 runing = True
 
@@ -68,6 +115,15 @@ class Snake:
                 
         
         if self.dead:
+            cur.execute("SELECT * FROM snakeInfo WHERE name = %s",(username,))
+            res = cur.fetchall()
+            if len(res) == 0:
+                cur.execute("INSERT INTO snakeInfo (name, score) VALUES (%s, %s)",(username, len(snake.body) - 1))
+            else:
+                for record in res:
+                    if len(snake.body) - 1 > int(record[2]):
+                        cur.execute("UPDATE snakeInfo SET score = %s WHERE score = %s", (len(snake.body) - 1, record[2]))
+            conn.commit()
             self.x, self.y = sizeBlock, sizeBlock
             self.head = pygame.Rect(self.x, self.y, sizeBlock, sizeBlock)
             self.body = [pygame.Rect(self.x - sizeBlock, self.y, sizeBlock, sizeBlock)]
@@ -119,11 +175,38 @@ class Banana:
 
 drawField()
 
+enterN = True
 
 snake = Snake()
 apple = Apple()
 banana = Banana()
+
+
+#ENTER NAME
+
+window = Tk()
+window.geometry('500x150')
+label = Label(window, text="Enter your username!:",fg="blue", font=('Arial', 14))
+label.grid(row=0, column=0, padx=5,pady=10)
+
+submit = Button(window, text='Enter', command=enterName)
+submit.grid(row=1, column=1)
+
+entry = Entry(window, fg="blue", font=('Arial', 14))
+entry.grid(row=0, column=1)
+
+
+
+window.mainloop()
+
+
+
+
+
+
 while runing:
+
+    
 
     
     
@@ -144,15 +227,30 @@ while runing:
             elif event.key == pygame.K_LEFT:
                 snake.xdir = -1
                 snake.ydir = 0
+            elif event.key == pygame.K_s:
+                cur.execute("SELECT * FROM snakeInfo WHERE name = %s",(username,))
+                res = cur.fetchall()
+                if len(res) == 0:
+                    cur.execute("INSERT INTO snakeInfo (name, score) VALUES (%s, %s)",(username, len(snake.body) - 1))
+                else:
+                    for record in res:
+                        if len(snake.body) - 1 > int(record[2]):
+                            cur.execute("UPDATE snakeInfo SET score = %s WHERE score = %s", (len(snake.body) - 1, record[2]))
+                conn.commit()
+                
+        
+    
         
     snake.update()
     win.fill('black')
     drawField()
+    
+    
 
     apple.update()
     banana.update()
     
-    levelN = int((len(snake.body) + 1)/5)
+    levelN = int((len(snake.body) - 1)/5)
 
     fps = 8 + (fps + levelN) / 5
     timeS += 1
@@ -161,8 +259,8 @@ while runing:
         banana = Banana()
         timeS = 0
 
-    score = font.render(f"{len(snake.body) + 1}", True, "white")
-    level = font.render(f"Level {levelN}", True, "white")
+    score = font.render(f"{len(snake.body) - 1}", True, "white")
+    level = font.render(f"Level {levelN + 1}", True, "white")
         
     pygame.draw.rect(win, pygame.Color('green'), snake.head)
     for square in snake.body:
@@ -182,6 +280,11 @@ while runing:
         
     clock.tick(fps)
     pygame.display.update()
+
+
+
+
+
 
 
 

@@ -40,7 +40,7 @@ def main():
         screen.fill(0)
         screen.blit(clock_image, (0, 0))
     
-        rot_minhand = pygame.transform.rotate(minhand_image, -1 * (6 * curr_min) - 160)
+        rot_minhand = pygame.transform.rotate(minhand_image, -1 * (6 * curr_min) - 90)
         rot_minhand_rect = rot_minhand.get_rect()
         rot_minhand_rect.center = minhand_rect.center
         screen.blit(rot_minhand, rot_minhand_rect)

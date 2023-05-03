@@ -111,6 +111,7 @@ while running:
         vehicle_group.add(vehicle)
     
     for vehicle in vehicle_group:
+            
         vehicle.rect.y += speed
 
         if vehicle.rect.top >= height:
