@@ -37,13 +37,11 @@ except Exception as error:
 
 
 username = None
-name = None
 
 def enterName():
     global username
     username = entry.get()
-    name = entry.get()
-    if name == '':
+    if username == '':
         enterName()
     window.destroy()
 
@@ -52,22 +50,16 @@ pygame.init()
 #set size of the screen
 height = 625
 width = 625
-
 sizeBlock = 30
 
 
-font = pygame.font.Font(pygame.font.get_default_font(), sizeBlock*2)
-
-
-
 #set fps/ speed of the game
-
 fps = 10
 speed = 2
-
 timeLim = 3 * 10
 timeS = 1
 
+font = pygame.font.Font(pygame.font.get_default_font(), sizeBlock*2)
 
 #making screen
 
@@ -77,15 +69,14 @@ def drawField():
             rect = pygame.Rect(x, y, sizeBlock, sizeBlock)
             pygame.draw.rect(win, pygame.Color('white') , rect , 1)
 
+
+
+
 win = pygame.display.set_mode((width, height))
 pygame.display.set_caption("Snake")
 
-
-
-
-runing = True
-
 clock = pygame.time.Clock()
+runing = True
 
 #create Snake class
 
@@ -143,6 +134,7 @@ class Snake:
         self.head.y += self.ydir * sizeBlock
         self.body.remove(self.head)
 
+
 #create apple class        
 
 class Apple:
@@ -162,6 +154,7 @@ levelRect = level.get_rect(center=(20, height/20))
 
 #create Banana class
 
+
 class Banana:
     def __init__(self):
         self.x = int(random.randint(0, width)/sizeBlock)*sizeBlock
@@ -175,14 +168,17 @@ class Banana:
 
 drawField()
 
-enterN = True
 
 snake = Snake()
 apple = Apple()
 banana = Banana()
 
 
+
 #ENTER NAME
+
+def disable_event():
+    pass
 
 window = Tk()
 window.geometry('500x150')
@@ -195,21 +191,13 @@ submit.grid(row=1, column=1)
 entry = Entry(window, fg="blue", font=('Arial', 14))
 entry.grid(row=0, column=1)
 
-
+window.protocol("WM_DELETE_WINDOW", disable_event)
 
 window.mainloop()
 
 
-
-
-
-
 while runing:
 
-    
-
-    
-    
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -237,21 +225,18 @@ while runing:
                         if len(snake.body) - 1 > int(record[2]):
                             cur.execute("UPDATE snakeInfo SET score = %s WHERE score = %s", (len(snake.body) - 1, record[2]))
                 conn.commit()
-                
+                print("Data has been saved!\n")
         
     
         
     snake.update()
     win.fill('black')
     drawField()
-    
-    
-
     apple.update()
     banana.update()
     
+    #Set level system
     levelN = int((len(snake.body) - 1)/5)
-
     fps = 8 + (fps + levelN) / 5
     timeS += 1
 
@@ -259,16 +244,18 @@ while runing:
         banana = Banana()
         timeS = 0
 
+    #Display score/level on the screen
     score = font.render(f"{len(snake.body) - 1}", True, "white")
     level = font.render(f"Level {levelN + 1}", True, "white")
+    win.blit(score, scoreRect)
+    win.blit(level, levelRect)
         
+
     pygame.draw.rect(win, pygame.Color('green'), snake.head)
     for square in snake.body:
         pygame.draw.rect(win, pygame.Color('green'), square)
 
-    win.blit(score, scoreRect)
-    win.blit(level, levelRect)
-    
+    #Head meating apple or banana
     if snake.head.x == apple.x and snake.head.y == apple.y:
         snake.body.append(pygame.Rect(square.x, square.y, sizeBlock, sizeBlock))
         apple = Apple()
@@ -280,6 +267,10 @@ while runing:
         
     clock.tick(fps)
     pygame.display.update()
+
+#closing conection    
+cur.close()
+conn.close()
 
 
 

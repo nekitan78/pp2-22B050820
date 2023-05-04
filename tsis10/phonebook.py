@@ -23,6 +23,7 @@ try:
     #cur.execute("DROP TABLE contacts")
 
     #cur.execute("CREATE TABLE contacts (id SERIAL PRIMARY KEY, name TEXT NOT NULL, surname TEXT,  mobile TEXT)")
+    #conn.commit()
 
 except Exception as error:
     print(error)
@@ -39,8 +40,10 @@ def create(data):
     return
 
 
+
+
 def read(namef):
-    cur.execute("SELECT * FROM contacts WHERE name = %s",(namef,))
+    cur.execute(f"SELECT * FROM contacts WHERE name LIKE '{namef}%' ORDER BY name")
     res = cur.fetchall()
     if len(res) == 0:
         print("Data hasnt been found!")
@@ -49,8 +52,11 @@ def read(namef):
         print(f' Name: {record[1]} \n Surname: {record[2]} \n Phone number: {record[3]} \n')
     return
 
+
+
+
 def readall():
-    cur.execute("SELECT * FROM contacts")
+    cur.execute("SELECT * FROM contacts ORDER BY name")
     res = cur.fetchall()
     if len(res) == 0:
         print("Data hasnt been found!")
@@ -58,6 +64,9 @@ def readall():
     for record in res:
         print(f' Name: {record[1]} \n Surname: {record[2]} \n Phone number: {record[3]}\n')
     return
+
+
+
 
 def update(namef):
     newsur = input("Enter a new surname")
@@ -68,6 +77,8 @@ def update(namef):
         cur.execute("UPDATE contacts SET surname = %s WHERE surname = %s", (newsur, record[2]))
         cur.execute("UPDATE contacts SET mobile = %s WHERE mobile = %s", (newmob, record[3]))
     conn.commit()
+
+
 
 def delete(namef):
     cur.execute("DELETE FROM contacts WHERE name = %s",(namef,))
